@@ -4,7 +4,7 @@ apt-get install -y xfsprogs
 
 # cariables
 DEVICE="/dev/nvme1n1"
-MOUNT_POINT="/mnt/gitaly-data"
+MOUNT_POINT="/mnt/data"
 
 # format the device if it's not already formatted
 if ! blkid ${DEVICE}; then
