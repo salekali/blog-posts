@@ -1,0 +1,31 @@
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  provider:
+    - key: karpenter.k8s.aws/instance-family
+      operator: In
+      values: [t3, c5, r5, t2]
+    - key: karpenter.k8s.aws/instance-size
+      operator: In
+      values: [nano, micro, small, medium, large, xlarge]
+  limits:
+    resources:
+      cpu: 100
+  ttlSecondsAfterEmpty: 30
+  providerRef:
+    name: test-provider
+
+---
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: test-provider
+spec:
+  subnetSelector:
+    kubernetes.io/cluster/eks-test-cluster: "shared"
+    kubernetes.io/role/internal-elb: "1"
+  securityGroupSelector:
+    kubernetes.io/cluster/eks-test-cluster: "owned"

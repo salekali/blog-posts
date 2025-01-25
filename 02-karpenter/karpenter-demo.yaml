@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karpenter-demo
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: karpenter-demo
+  template:
+    metadata:
+      labels:
+        app: karpenter-demo
+    spec:
+      nodeSelector:
+        node-type: karpenter
+      containers:
+      - name: karpenter-demo
+        image: k8s.gcr.io/echoserver:1.10
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "128Mi"
+          requests:
+            cpu: "250m"
+            memory: "64Mi"
+        ports:
+        - containerPort: 8080
