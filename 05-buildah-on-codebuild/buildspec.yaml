@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo "Installing Buildah..."
+      - yum -y install buildah
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | buildah login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+  build:
+    commands:
+      - echo "Building the Docker image with Buildah..."
+      - buildah bud -t $REPOSITORY_NAME:latest .
+
+  post_build:
+    commands:
+      - echo "Pushing the Docker image to Amazon ECR..."
+      - buildah push $REPOSITORY_NAME:latest docker://$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    ACCOUNT_ID: "123456789012"
+    REPOSITORY_NAME: "my-container-repo"
